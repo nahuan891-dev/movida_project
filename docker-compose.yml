@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  movida-scraper:
+    build: .
+    container_name: movida-scraper-service
+    volumes:
+      # Mapeia a pasta de dados local para persistência (Medalhão)
+      - ./data:/app/data
+      # Se você tiver um arquivo .env, ele será lido
+      - ./.env:/app/.env:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    # Por padrão, vamos rodar uma coleta de teste rápida
+    # Para rodar a coleta full, use: docker-compose run movida-scraper --max-cards 1000
+    command: ["--max-cards", "20", "--by-brand"]
+
+  # Opcional: Um serviço separado apenas para o Health Check
+  health-check:
+    build: .
+    container_name: movida-health-check
+    volumes:
+      - ./data:/app/data
+    command: ["--test-only"]

@@ -1,0 +1,57 @@
+# Ambiente virtual
+.venv/
+venv/
+env/
+ENV/
+
+# Dados coletados
+data/
+*.csv
+
+# Logs
+*.log
+movida_scraper.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Notebooks temporários
+.ipynb_checkpoints/
+
+# Arquivos de configuração local
+config_local.py
