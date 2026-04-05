@@ -32,7 +32,7 @@ O serviço opera seguindo o padrão de camadas para garantir governança e quali
 ### Instalação
 ```bash
 # Clone o repositório e entre na pasta
-git clone <repo-url>
+git clone https://github.com/nahuan891-dev/movida_project
 cd movida-scraper
 
 # Crie e ative o ambiente virtual (Windows)
