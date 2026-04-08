@@ -13,7 +13,11 @@ from .scraper import MovidaScraper
 from .data_processor import DataProcessor, DataValidator, GoldDataCleaner
 from .config import BRONZE_DIR, SILVER_DIR, GOLD_DIR, BRANDS
 from .timer import PerformanceTimer, time_block
+<<<<<<< HEAD
 from prepare_powerbi import adicionar_coordenadas
+=======
+from .prepare_powerbi import adicionar_coordenadas
+>>>>>>> master
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +26,11 @@ logger = logging.getLogger(__name__)
 class PipelineConfig:
     """Configuração do pipeline"""
     max_cards: int = 1000
+<<<<<<< HEAD
     timeout: int = 300
+=======
+    timeout: int = 1800
+>>>>>>> master
     output_file: str = 'carros_movida.csv'
     headless: bool = True
     by_brand: bool = True  # Alterado para True - usar scraping por marca por padrão
