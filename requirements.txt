@@ -1,0 +1,19 @@
+# Dependências do projeto Movida Scraper
+
+# Web scraping
+selenium==4.15.2
+webdriver-manager==4.0.1
+
+# Processamento de dados
+pandas==2.1.4
+numpy>=1.24.0
+
+# Utilitários
+requests==2.31.0
+geopy==2.4.0
+psutil==5.9.6
+
+# Desenvolvimento (opcional)
+pytest==7.4.3
+black==23.11.0
+flake8==6.1.0

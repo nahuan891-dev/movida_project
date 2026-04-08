@@ -1,0 +1,80 @@
+{
+  "paginas": [
+    {
+      "nome": "Visão Geral",
+      "visualizacoes": [
+        {
+          "tipo": "card",
+          "titulo": "Total de Carros",
+          "campo": "id",
+          "agregacao": "count"
+        },
+        {
+          "tipo": "card",
+          "titulo": "Preço Médio",
+          "campo": "preco",
+          "agregacao": "average",
+          "formato": "R$ #,##0.00"
+        },
+        {
+          "tipo": "card",
+          "titulo": "KM Médio",
+          "campo": "km",
+          "agregacao": "average",
+          "formato": "#,##0"
+        },
+        {
+          "tipo": "barras",
+          "titulo": "Carros por Marca",
+          "eixo_x": "marca",
+          "valores": "id",
+          "agregacao": "count"
+        },
+        {
+          "tipo": "mapa",
+          "titulo": "Distribuição Geográfica",
+          "localizacao": "localizacao",
+          "tamanho": "preco"
+        }
+      ]
+    },
+    {
+      "nome": "Análise de Preços",
+      "visualizacoes": [
+        {
+          "tipo": "histograma",
+          "titulo": "Distribuição de Preços",
+          "campo": "preco",
+          "bins": 20
+        },
+        {
+          "tipo": "scatter",
+          "titulo": "Preço vs KM",
+          "eixo_x": "km",
+          "eixo_y": "preco",
+          "tamanho": "idade_veiculo"
+        },
+        {
+          "tipo": "boxplot",
+          "titulo": "Preços por Marca",
+          "categoria": "marca",
+          "valores": "preco"
+        }
+      ]
+    }
+  ],
+  "segmentacoes": [
+    {
+      "campo": "marca",
+      "titulo": "Filtrar por Marca"
+    },
+    {
+      "campo": "faixa_preco",
+      "titulo": "Faixa de Preço"
+    },
+    {
+      "campo": "faixa_km",
+      "titulo": "Faixa de KM"
+    }
+  ]
+}

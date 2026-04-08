@@ -1,0 +1,153 @@
+{
+  "dataset_info": {
+    "nome": "Carros Movida - Seminovos",
+    "total_registros": 1240,
+    "data_coleta": "2026-03-27 16:00:59",
+    "fonte": "https://www.seminovosmovida.com.br"
+  },
+  "colunas": {
+    "marca": {
+      "tipo": "str",
+      "valores_unicos": 17,
+      "valores_nulos": "0",
+      "exemplo": "Volkswagen"
+    },
+    "modelo": {
+      "tipo": "str",
+      "valores_unicos": 34,
+      "valores_nulos": "0",
+      "exemplo": "Volkswagen Gol"
+    },
+    "versao": {
+      "tipo": "str",
+      "valores_unicos": 57,
+      "valores_nulos": "0",
+      "exemplo": "1.0 Flex 12v 5p"
+    },
+    "ano_fabricacao": {
+      "tipo": "int64",
+      "valores_unicos": 6,
+      "valores_nulos": "0",
+      "exemplo": "2022"
+    },
+    "ano_modelo": {
+      "tipo": "int64",
+      "valores_unicos": 7,
+      "valores_nulos": "0",
+      "exemplo": "2023"
+    },
+    "km": {
+      "tipo": "int64",
+      "valores_unicos": 1224,
+      "valores_nulos": "0",
+      "exemplo": "73872"
+    },
+    "localizacao": {
+      "tipo": "str",
+      "valores_unicos": 118,
+      "valores_nulos": "40",
+      "exemplo": "Santo André, SP"
+    },
+    "preco_bruto": {
+      "tipo": "str",
+      "valores_unicos": 364,
+      "valores_nulos": "0",
+      "exemplo": "R$ 56.000"
+    },
+    "condicoes": {
+      "tipo": "str",
+      "valores_unicos": 419,
+      "valores_nulos": "0",
+      "exemplo": "Entrada + parcelas a partir de R$ 829*"
+    },
+    "texto_completo": {
+      "tipo": "str",
+      "valores_unicos": 1234,
+      "valores_nulos": "0",
+      "exemplo": "Volkswagen Gol\n1.0 Flex 12v 5p\n2022/2023 • 73.872 KM • Santo André, SP\nR$ 56.000\nEntrada + parcelas a partir de R$ 829*\nMostrar os detalhes do carro"
+    },
+    "id": {
+      "tipo": "int64",
+      "valores_unicos": 1240,
+      "valores_nulos": "0",
+      "exemplo": "1"
+    },
+    "data_coleta": {
+      "tipo": "str",
+      "valores_unicos": 1,
+      "valores_nulos": "0",
+      "exemplo": "2026-03-27 16:00:59"
+    },
+    "preco": {
+      "tipo": "float64",
+      "valores_unicos": 325,
+      "valores_nulos": "120",
+      "exemplo": "56000.0"
+    },
+    "faixa_preco": {
+      "tipo": "str",
+      "valores_unicos": 5,
+      "valores_nulos": "120",
+      "exemplo": "50k-80k"
+    },
+    "faixa_km": {
+      "tipo": "str",
+      "valores_unicos": 4,
+      "valores_nulos": "0",
+      "exemplo": "60k-100k km"
+    },
+    "idade_veiculo": {
+      "tipo": "int64",
+      "valores_unicos": 6,
+      "valores_nulos": "0",
+      "exemplo": "4"
+    },
+    "preco_por_km": {
+      "tipo": "float64",
+      "valores_unicos": 1114,
+      "valores_nulos": "120",
+      "exemplo": "0.7580680095299979"
+    }
+  },
+  "estatisticas": {
+    "preco": {
+      "media": 77292.80357142857,
+      "mediana": 71600.0,
+      "min": 2020.0,
+      "max": 182800.0,
+      "desvio_padrao": 26868.69747432397
+    },
+    "km": {
+      "media": 54951.39435483871,
+      "mediana": 56914.5,
+      "min": "1",
+      "max": "109310"
+    },
+    "marcas": {
+      "Volkswagen": 220,
+      "Renault": 220,
+      "Hyundai": 220,
+      "Toyota": 200,
+      "Jeep": 140,
+      "Citroen": 70,
+      "Peugeot": 62,
+      "Nissan": 53,
+      "Chevrolet": 40,
+      "Audi": 5,
+      "Volvo": 3,
+      "Caoa": 2,
+      "BMW": 1,
+      "Ford": 1,
+      "Honda": 1,
+      "MINI": 1,
+      "Mitsubishi": 1
+    }
+  },
+  "insights_recomendados": [
+    "Preço médio por marca",
+    "Distribuição geográfica",
+    "Correlação preço vs quilometragem",
+    "Faixas de preço mais populares",
+    "Idade média dos veículos por marca"
+  ]
+}
