@@ -124,32 +124,19 @@ class GoldDataCleaner:
     @staticmethod
     def _normalize_preco_bruto(df: pd.DataFrame) -> pd.DataFrame:
         """
-<<<<<<< HEAD
         Converte a coluna preco_bruto em um valor numérico (float)
-=======
-        Converte a coluna preco_bruto em um valor numérico inteiro
->>>>>>> master
         removendo 'R$', pontos de milhar e tratando a vírgula decimal.
         """
         if 'preco_bruto' not in df.columns:
             return df
 
         def clean_price_to_numeric(price_val):
-<<<<<<< HEAD
             if pd.isna(price_val):
                 return None
             
             # Se já for número, apenas retorna
             if isinstance(price_val, (int, float)):
                 return float(price_val)
-=======
-            if pd.isna(price_val) or price_val == '':
-                return 0
-            
-            # Se já for número, apenas retorna como int
-            if isinstance(price_val, (int, float)):
-                return int(price_val)
->>>>>>> master
                 
             # Se for string, limpa
             price_str = str(price_val)
@@ -160,7 +147,6 @@ class GoldDataCleaner:
             # 3. Trocar vírgula decimal por ponto (se houver)
             price_str = price_str.replace(',', '.')
             
-<<<<<<< HEAD
             # 4. Extrair apenas a parte numérica (caso haja lixo no fim)
             match = re.search(r'(\d+\.?\d*)', price_str)
             if match:
@@ -170,17 +156,6 @@ class GoldDataCleaner:
 
         df['preco_bruto'] = df['preco_bruto'].apply(clean_price_to_numeric)
         logger.info("Coluna 'preco_bruto' convertida para numérico")
-=======
-            # 4. Extrair apenas a parte numérica
-            match = re.search(r'(\d+\.?\d*)', price_str)
-            if match:
-                return int(float(match.group(1)))
-            
-            return 0
-
-        df['preco_bruto'] = df['preco_bruto'].apply(clean_price_to_numeric).astype(int)
-        logger.info("Coluna 'preco_bruto' convertida para inteiro")
->>>>>>> master
         return df
 
     @staticmethod
@@ -441,7 +416,6 @@ class GoldDataCleaner:
 
 
 class CardParser:
-<<<<<<< HEAD
     """Encapsula lógica de parsing de dados dos cards"""
 
     # Estrutura esperada dos cards
@@ -533,111 +507,12 @@ class CardParser:
                 'condicoes': condicoes,
                 'texto_completo': ' '.join(card_data).replace('\n', ' ')
             }
-=======
-    """Encapsula lógica de parsing de dados dos cards de forma robusta"""
-
-    # Padrões regex para identificação de tipos de linha
-    PATTERNS = {
-        'info': re.compile(r'\d{4}/\d{4}.*KM', re.IGNORECASE),
-        'price': re.compile(r'R\$\s*[\d\.,]+'),
-        'tags': ['BLINDADO', 'BAIXO KM', 'IPVA PAGO', 'MIDIA', 'OFERTA', 'NOVIDADE', 'ÚNICO DONO']
-    }
-
-    @staticmethod
-    def parse(card_data: List[str]) -> Optional[Dict[str, Any]]:
-        """
-        Parseia dados do card identificando campos por conteúdo, não por posição.
-        """
-        if not card_data or len(card_data) < 2:
-            return None
-
-        try:
-            # Inicializar campos
-            res = {
-                'marca': '', 'modelo': '', 'versao': '',
-                'ano_fabricacao': None, 'ano_modelo': None,
-                'km': None, 'localizacao': '', 'preco_bruto': '',
-                'condicoes': '', 'texto_completo': ' '.join(card_data),
-                'blindado': 'Não', 'tags': []
-            }
-
-            # 1. Identificar linhas especiais e limpar "lixo"
-            limpas = []
-            for line in card_data:
-                line_upper = line.upper().strip()
-                
-                # Checar se é flag de Compra Online (adicionada pelo scraper)
-                if "COMPRA_ONLINE:" in line_upper:
-                    res['compra_online'] = line.split(':')[-1].strip()
-                    continue
-
-                # Checar se é tag conhecida
-                is_tag = False
-                for tag in CardParser.PATTERNS['tags']:
-                    if tag in line_upper:
-                        res['tags'].append(tag)
-                        if tag == 'BLINDADO': res['blindado'] = 'Sim'
-                        is_tag = True
-                        break
-                if is_tag: continue
-
-                # Checar se é linha de Preço
-                if CardParser.PATTERNS['price'].search(line_upper):
-                    if not res['preco_bruto']: # Pega o primeiro preço encontrado
-                        res['preco_bruto'] = line.strip()
-                    continue
-
-                # Checar se é linha de Info (Ano/KM/Local)
-                if CardParser.PATTERNS['info'].search(line_upper):
-                    # Extrair Anos
-                    ano_match = re.search(r'(\d{4})/(\d{4})', line)
-                    if ano_match:
-                        res['ano_fabricacao'] = int(ano_match.group(1))
-                        res['ano_modelo'] = int(ano_match.group(2))
-                    
-                    # Extrair KM
-                    km_match = re.search(r'([\d\.]+)\s*KM', line_upper)
-                    if km_match:
-                        res['km'] = int(km_match.group(1).replace('.', ''))
-                    
-                    # Extrair Localização (o que sobra após o último •)
-                    if '•' in line:
-                        res['localizacao'] = line.split('•')[-1].strip()
-                    continue
-
-                # Se não for nada disso, é parte do nome ou descrição
-                if line.strip() and "DETALHES" not in line_upper:
-                    limpas.append(line.strip())
-
-            # 2. Atribuir Marca, Modelo e Versão do que restou
-            if len(limpas) >= 1:
-                res['modelo'] = limpas[0]
-                # Tentar extrair marca do modelo
-                for brand in ['VOLKSWAGEN', 'FIAT', 'RENAULT', 'HYUNDAI', 'TOYOTA', 'JEEP', 'CHEVROLET', 'AUDI', 'BMW', 'VOLVO']:
-                    if brand in limpas[0].upper():
-                        res['marca'] = brand.capitalize()
-                        break
-                if not res['marca'] and ' ' in limpas[0]:
-                    res['marca'] = limpas[0].split()[0]
-
-            if len(limpas) >= 2:
-                res['versao'] = ' '.join(limpas[1:])
-
-            # 3. Condições (geralmente linhas que sobraram com valores menores ou prazos)
-            for line in card_data:
-                if 'parcela' in line.lower() or 'entrada' in line.lower():
-                    res['condicoes'] = line.strip()
-                    break
-
-            return res
->>>>>>> master
         except Exception as e:
             logger.warning(f"Erro ao parsear card: {e}")
             return None
 
     @staticmethod
     def _validate_structure(card_data: List[str]) -> bool:
-<<<<<<< HEAD
         """Valida se o card tem estrutura mínima"""
         return len(card_data) >= len(CardParser.CARD_STRUCTURE) - 1  # Pelo menos 4 campos
 
@@ -678,10 +553,6 @@ class CardParser:
             return local
         return None
 
-=======
-        """Mantido por compatibilidade, mas a lógica agora é mais flexível"""
-        return len(card_data) >= 3
->>>>>>> master
 
 class DataProcessor:
     """Classe para processar dados dos carros"""
@@ -700,7 +571,6 @@ class DataProcessor:
 
     def _extract_car_info(self, card_data: List[str]) -> Optional[Dict[str, Any]]:
         """
-<<<<<<< HEAD
         Extrai informações estruturadas de um card
 
         Args:
@@ -708,16 +578,12 @@ class DataProcessor:
 
         Returns:
             Dicionário com informações extraídas ou None se inválido
-=======
-        Extrai informações estruturadas de um card usando o novo CardParser
->>>>>>> master
         """
         return CardParser.parse(card_data)
 
     def process_car_data(self, dados_cards: List[List[str]]) -> pd.DataFrame:
         """
         Processa lista de dados dos cards e retorna DataFrame estruturado
-<<<<<<< HEAD
 
         Args:
             dados_cards: Lista de listas com dados dos cards
@@ -750,34 +616,6 @@ class DataProcessor:
                 logger.warning(f"Erro ao processar card {i}: {e}")
                 continue
 
-=======
-        Utiliza multithreading para acelerar o processamento de grandes volumes.
-        """
-        from concurrent.futures import ThreadPoolExecutor
-        
-        logger.info(f"Processando {len(dados_cards)} cards em paralelo...")
-        start_time = pd.Timestamp.now()
-
-        def process_single_card(args):
-            i, card = args
-            try:
-                registro = self._extract_car_info(card)
-                if registro:
-                    registro['id'] = i + 1
-                    # data_coleta já vem do registro se quisermos manter a original do card
-                    return registro
-            except Exception as e:
-                return None
-            return None
-
-        # Processar em paralelo
-        with ThreadPoolExecutor() as executor:
-            args_list = list(enumerate(dados_cards))
-            resultados = list(executor.map(process_single_card, args_list))
-
-        # Filtrar nulos e criar DataFrame
-        registros = [r for r in resultados if r is not None]
->>>>>>> master
         df = pd.DataFrame(registros)
 
         if df.empty:
@@ -790,7 +628,6 @@ class DataProcessor:
         # Adicionar colunas calculadas
         df = self._add_calculated_columns(df)
 
-<<<<<<< HEAD
         logger.info(f"Processamento concluído. Total registros: {len(df)}")
         return df
 
@@ -840,39 +677,10 @@ class DataProcessor:
             logger.error(f"Erro na limpeza de localização: {e}")
 
         logger.info(f"Tipos finais: {df.dtypes.to_dict()}")
-=======
-        duration = (pd.Timestamp.now() - start_time).total_seconds()
-        logger.info(f"Processamento concluído em {duration:.2f}s. Total registros: {len(df)}")
-        return df
-
-    def _clean_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Limpa e converte tipos de dados de forma segura"""
-        
-        # Converter colunas para numérico se necessário
-        for col in ['ano_fabricacao', 'ano_modelo', 'km']:
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
-
-        # Preço - usar a lógica robusta que já temos
-        if 'preco_bruto' in df.columns:
-            # Extrair valor numérico, converter para float e depois para int
-            df['preco'] = (
-                df['preco_bruto']
-                .str.replace(r'R\$\s*', '', regex=True)
-                .str.replace(r'\.', '', regex=True)
-                .str.replace(',', '.', regex=False)
-                .str.extract(r'(\d+\.?\d*)')[0]
-                .astype(float)
-                .fillna(0)
-                .astype(int)
-            )
-
->>>>>>> master
         return df
 
     def _add_calculated_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         """Adiciona colunas calculadas para análise"""
-<<<<<<< HEAD
         logger.info(f"Adicionando colunas calculadas. Preços: {df['preco'].dtype}, KM: {df['km'].dtype}")
 
         # Faixas de preço
@@ -905,43 +713,18 @@ class DataProcessor:
 
         # Eficiência preço/KM (evitar divisão por zero ou NaN)
         try:
-=======
-        # Faixas de preço
-        if 'preco' in df.columns:
-            df['faixa_preco'] = pd.cut(
-                df['preco'], bins=PRECO_BINS, labels=PRECO_LABELS, include_lowest=True
-            )
-
-        # Faixas de quilometragem
-        if 'km' in df.columns:
-            df['faixa_km'] = pd.cut(
-                df['km'], bins=KM_BINS, labels=KM_LABELS, include_lowest=True
-            )
-
-        # Idade do veículo
-        if 'ano_fabricacao' in df.columns:
-            ano_atual = pd.Timestamp.now().year
-            df['idade_veiculo'] = ano_atual - df['ano_fabricacao']
-
-        # Eficiência preço/KM
-        if 'preco' in df.columns and 'km' in df.columns:
->>>>>>> master
             df['preco_por_km'] = df.apply(
                 lambda row: row['preco'] / row['km'] if pd.notna(row['preco']) and pd.notna(row['km']) and row['km'] > 0 else None,
                 axis=1
             )
-<<<<<<< HEAD
             logger.info("Preço por KM calculado")
         except Exception as e:
             logger.error(f"Erro no cálculo preço/KM: {e}")
-=======
->>>>>>> master
 
         return df
 
     def _convert_raw_to_dataframe(self, raw_data: List[List[str]]) -> pd.DataFrame:
         """
-<<<<<<< HEAD
         Converte dados brutos em DataFrame mínimo para camada Bronze
 
         Args:
@@ -949,15 +732,10 @@ class DataProcessor:
 
         Returns:
             DataFrame com colunas básicas da camada Bronze
-=======
-        Converte dados brutos em DataFrame Bronze de forma alinhada e inteligente.
-        Resolve o problema de deslocamento de colunas causado por tags extras.
->>>>>>> master
         """
         if not raw_data:
             return pd.DataFrame()
 
-<<<<<<< HEAD
         # Criar DataFrame sem especificar colunas para lidar com dados de tamanho variável
         df = pd.DataFrame(raw_data)
 
@@ -979,29 +757,6 @@ class DataProcessor:
         df['data_coleta'] = pd.Timestamp.now()
 
         return df
-=======
-        processados = []
-        for i, card in enumerate(raw_data):
-            # Usar o parse inteligente para alinhar os dados antes de salvar o Bronze
-            info = self._extract_car_info(card)
-            if info:
-                # Criar dicionário com colunas fixas para o Bronze
-                row = {
-                    'marca_modelo': info['modelo'],
-                    'versao': info['versao'],
-                    'info_line': f"{info['ano_fabricacao']}/{info['ano_modelo']} • {info['km']} KM • {info['localizacao']}",
-                    'preco_bruto': info['preco_bruto'],
-                    'condicoes': info['condicoes'],
-                    'blindado': info['blindado'],
-                    'tags': '|'.join(info['tags']),
-                    'compra_online': info.get('compra_online', 'Não'),
-                    'id': i + 1,
-                    'data_coleta': pd.Timestamp.now()
-                }
-                processados.append(row)
-
-        return pd.DataFrame(processados)
->>>>>>> master
 
     def save_to_csv(self, df: pd.DataFrame, filename: str = DEFAULT_FILENAME, output_dir: Optional[Path] = None) -> str:
         """

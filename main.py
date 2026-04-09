@@ -63,13 +63,8 @@ python main.py --no-by-brand
     parser.add_argument(
         '--timeout',
         type=int,
-<<<<<<< HEAD
         default=300,
         help='Timeout em segundos para coleta (padrão: 300)'
-=======
-        default=1800,
-        help='Timeout em segundos para coleta (padrão: 1800)'
->>>>>>> master
     )
 
     parser.add_argument(

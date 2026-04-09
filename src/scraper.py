@@ -114,16 +114,11 @@ class MovidaScraper:
         scroll_attempts = 0
         no_new_cards_count = 0
 
-<<<<<<< HEAD
         logger.info("Iniciando coleta otimizada de cards")
-=======
-        logger.info(f"Iniciando coleta otimizada de cards (Alvo: {max_items})")
->>>>>>> master
 
         while (len(cards) < max_items and
                (time.time() - start_time) < timeout and
                scroll_attempts < SCROLL_ATTEMPTS_MAX and
-<<<<<<< HEAD
                no_new_cards_count < 3):  # Parar se não há novos cards por 3 scrolls
 
             # Scroll direto para o bottom (mais eficiente)
@@ -132,42 +127,6 @@ class MovidaScraper:
             # Aguardar carregamento dinâmico com timeout reduzido
             try:
                 WebDriverWait(self.driver, 2).until(
-=======
-               no_new_cards_count < 5):  # Aumentado para 5 para ser mais resiliente
-
-            # 1. Scroll direto para o bottom
-            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(POST_SCROLL_DELAY)
-
-            # 2. Pequeno "nudge" (subir e descer) para forçar o trigger de lazy load
-            self.driver.execute_script("window.scrollBy(0, -200);")
-            time.sleep(0.2)
-            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
-            # 3. Verificar botões de "Carregar mais"
-            try:
-                # Buscar por botões que contenham textos comuns de carregamento
-                load_more_xpaths = [
-                    "//button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'carregar mais')]",
-                    "//button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'ver mais')]",
-                    "//a[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'carregar mais')]",
-                    "//div[contains(@class, 'load-more')]//button"
-                ]
-                
-                for xpath in load_more_xpaths:
-                    btns = self.driver.find_elements(By.XPATH, xpath)
-                    for btn in btns:
-                        if btn.is_displayed():
-                            self.driver.execute_script("arguments[0].click();", btn)
-                            logger.info("Botão 'Carregar mais' detectado e clicado")
-                            time.sleep(1)
-            except:
-                pass
-
-            # Aguardar carregamento dinâmico com timeout ligeiramente maior
-            try:
-                WebDriverWait(self.driver, 3).until(
->>>>>>> master
                     lambda driver: driver.execute_script("return document.body.scrollHeight") > last_height
                 )
             except TimeoutException:
@@ -181,42 +140,23 @@ class MovidaScraper:
             if len(current_cards) > len(cards):
                 cards = current_cards
                 no_new_cards_count = 0
-<<<<<<< HEAD
                 logger.info(f"Scroll {scroll_attempts + 1}: {len(cards)} cards")
             else:
                 no_new_cards_count += 1
-=======
-                if len(cards) % 200 == 0 or len(cards) < 200:
-                    logger.info(f"Progresso: {len(cards)}/{max_items} cards (Scroll {scroll_attempts + 1})")
-            else:
-                no_new_cards_count += 1
-                if no_new_cards_count >= 2:
-                    logger.warning(f"Sem novos cards por {no_new_cards_count} tentativas...")
->>>>>>> master
 
             last_height = new_height
             scroll_attempts += 1
 
-<<<<<<< HEAD
             # Pequena pausa apenas se necessário
             if scroll_attempts % 5 == 0:
                 time.sleep(0.5)
 
         collected = cards[:max_items]
         logger.info(f"Coleta otimizada finalizada. Total: {len(collected)} cards em {time.time() - start_time:.1f}s")
-=======
-            # Pausa estratégica para não sobrecarregar o browser
-            if scroll_attempts % 10 == 0:
-                time.sleep(1)
-
-        collected = cards[:max_items]
-        logger.info(f"Coleta finalizada. Total: {len(collected)}/{max_items} cards em {time.time() - start_time:.1f}s")
->>>>>>> master
         return collected
 
     def _extract_cards_batch(self, cards: List) -> List[List[str]]:
         """
-<<<<<<< HEAD
         Extrai dados de texto de múltiplos cards em lote, incluindo flag de compra online
 
         Args:
@@ -258,47 +198,6 @@ class MovidaScraper:
             if (i + batch_size) % 200 == 0:
                 logger.info(f"Processados {i + batch_size} cards")
 
-=======
-        Extrai dados de todos os cards de uma vez usando JavaScript para máxima performance.
-        Reduz o overhead de comunicação Selenium-Browser.
-        """
-        logger.info(f"Iniciando extração ultra-rápida de {len(cards)} cards via JavaScript...")
-        
-        # Script JS para extrair dados de todos os cards no lado do cliente (browser)
-        # Isso evita 6000+ RTTs (Round Trip Times) entre Python e Selenium
-        js_script = """
-        const cards = document.querySelectorAll('a card');
-        return Array.from(cards).map(card => {
-            const innerText = card.innerText || "";
-            const html = card.innerHTML.toUpperCase();
-            const compraOnline = (html.includes('RESERVAR ONLINE') || html.includes('COMPRA ONLINE')) ? 'Sim' : 'Não';
-            
-            // Retornar as linhas do texto + a flag de compra online
-            let lines = innerText.split('\\n').map(l => l.trim()).filter(l => l.length > 0);
-            lines.push("COMPRA_ONLINE: " + compraOnline);
-            return lines;
-        });
-        """
-        
-        try:
-            start_extract = time.time()
-            dados = self.driver.execute_script(js_script)
-            logger.info(f"Extração JS concluída em {time.time() - start_extract:.2f}s")
-            return dados
-        except Exception as e:
-            logger.error(f"Falha na extração ultra-rápida: {e}. Tentando fallback lento...")
-            # Fallback (opcional, mas mantido por segurança)
-            return self._extract_cards_batch_slow(cards)
-
-    def _extract_cards_batch_slow(self, cards: List) -> List[List[str]]:
-        """Método original de extração (lento) para fallback"""
-        dados = []
-        for card in cards[:500]: # Limitar fallback para não travar
-            try:
-                texto = card.text.split('\n')
-                dados.append(texto)
-            except: continue
->>>>>>> master
         return dados
 
     def scrape_cars(self, max_items: int = MAX_CARDS,
@@ -422,11 +321,7 @@ class MovidaScraper:
 
     def _collect_cards_for_driver(self, driver, max_items: int, timeout: int) -> List:
         """
-<<<<<<< HEAD
         Coleta cards usando um driver específico (para paralelização)
-=======
-        Coleta cards usando um driver específico (para paralelização) com as mesmas melhorias de resiliência.
->>>>>>> master
         """
         from selenium.webdriver.support.ui import WebDriverWait
         from selenium.webdriver.support import expected_conditions as EC
@@ -441,27 +336,12 @@ class MovidaScraper:
         while (len(cards) < max_items and
                (time.time() - start_time) < timeout and
                scroll_attempts < SCROLL_ATTEMPTS_MAX and
-<<<<<<< HEAD
                no_new_cards_count < 3):
 
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
             try:
                 WebDriverWait(driver, 1).until(
-=======
-               no_new_cards_count < 5):
-
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(0.3)
-            
-            # "Nudge" para trigger de lazy load
-            driver.execute_script("window.scrollBy(0, -200);")
-            time.sleep(0.2)
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
-            try:
-                WebDriverWait(driver, 2).until(
->>>>>>> master
                     lambda d: d.execute_script("return document.body.scrollHeight") > last_height
                 )
             except TimeoutException:
