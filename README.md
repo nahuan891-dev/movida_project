@@ -2,9 +2,10 @@
 
 [![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
 [![Architecture: Medalhão](https://img.shields.io/badge/Architecture-Medallion-orange.svg)](#-arquitetura-de-dados-medalhão)
+[![AI: Predictive](https://img.shields.io/badge/AI-Predictive-blueviolet.svg)](#-inteligência-artificial-preditiva)
 [![Framework: ITIL 4](https://img.shields.io/badge/Framework-ITIL%204-green.svg)](#-alinhamento-itil-4)
 
-O **Movida Scraper** é um serviço robusto de extração e refinamento de dados de veículos seminovos. Ele transforma o estoque público da Movida em um ativo de dados estruturado, geolocalizado e pronto para análise avançada de BI (Power BI, Tableau, etc).
+O **Movida Scraper** é uma plataforma de inteligência competitiva de dados para o mercado automotivo. Ele automatiza a coleta, o refinamento e a **análise preditiva** do estoque da Movida, transformando dados brutos em insights estratégicos geolocalizados e projeções de mercado.
 
 ---
 
@@ -13,14 +14,31 @@ O **Movida Scraper** é um serviço robusto de extração e refinamento de dados
 O serviço opera seguindo o padrão de camadas para garantir governança e qualidade:
 
 ```text
-[ SITE MOVIDA ] ──( Scraper )──▶ [ BRONZE ] ──( Processador )──▶ [ SILVER ] ──( Enriquecimento )──▶ [ GOLD ]
-      ▲                              │               │               │                │               │
-      └─────────── RAW ──────────────┘               └──── CLEAN ────┘                └──── VALUE ────┘
+[ SITE MOVIDA ] ──( Scraper )──▶ [ BRONZE ] ──( Processador )──▶ [ SILVER ] ──( Enriquecimento )──▶ [ GOLD ] ──( ML Engine )──▶ [ PREDICTIONS ]
+      ▲                              │               │               │                │               │                │
+      └─────────── RAW ──────────────┘               └──── CLEAN ────┘                └──── VALUE ────┘                └──── INSIGHTS ──┘
 ```
 
-1.  **🟫 Bronze (Raw)**: Captura fiel do HTML/Cards. Sem perdas. `data/bronze/`
-2.  **🟨 Silver (Cleaned)**: Tipagem de dados (R$, KM), extração de atributos e remoção de lixo. `data/silver/`
-3.  **🟩 Gold (Refined)**: Normalização de modelos, Geocodificação (Lat/Long) e KPIs de negócio. `data/gold/`
+1.  **🟫 Bronze (Raw)**: Captura fiel do HTML/Cards. `data/bronze/`
+2.  **🟨 Silver (Cleaned)**: Tipagem de dados (R$, KM) e extração de atributos. `data/silver/`
+3.  **🟩 Gold (Refined)**: Normalização, Geocodificação e KPIs de negócio. `data/gold/`
+4.  **🔮 Predictions (AI)**: Predição de demanda e saúde da frota via ML/DL. `data/gold_predictions.csv`
+
+---
+
+## 🧠 Inteligência Artificial Preditiva
+
+O projeto conta com uma camada de ciência de dados avançada para responder às críticas de mercado e apoiar a tomada de decisão:
+
+### 1. Previsão de Demanda (Deep Learning)
+- **Modelo**: LSTM (Long Short-Term Memory) implementado em PyTorch.
+- **Objetivo**: Prever a densidade de anúncios para o próximo período com base na série temporal coletada.
+- **Técnica**: Normalização via MinMaxScaler e Windowing de 7 a 30 dias.
+
+### 2. Saúde da Frota e Aging (Machine Learning)
+- **Modelo**: XGBoost Regressor.
+- **Objetivo**: Predizer a idade esperada do veículo com base em KM, Marca e Preço.
+- **KPI - Fleet Health Score**: Diferença absoluta entre a idade real e a prevista. Desvios altos indicam veículos que precisam de manutenção urgente ou renovação imediata.
 
 ---
 
@@ -32,124 +50,56 @@ O serviço opera seguindo o padrão de camadas para garantir governança e quali
 ### Instalação
 ```bash
 # Clone o repositório e entre na pasta
-<<<<<<< HEAD
 git clone https://github.com/nahuan891-dev/movida_project
-=======
-git clone <repo-url>
->>>>>>> master
 cd movida-scraper
 
 # Crie e ative o ambiente virtual (Windows)
 python -m venv .venv
 .\.venv\Scripts\activate
 
-# Instale as dependências
-pip install -r requirements.txt
+# Instale as dependências (Inclui XGBoost, PyTorch e Scikit-learn)
+uv pip install -r requirements.txt
 ```
 
 ---
 
 ## 🐳 Execução via Docker (Recomendado)
 
-O projeto está totalmente conteinerizado, o que garante que o Selenium funcione perfeitamente sem depender do Chrome instalado na sua máquina local.
-
-### Requisitos
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado.
+O projeto está totalmente conteinerizado, o que garante que o Selenium e a IA funcionem perfeitamente.
 
 ### Comandos Docker
 ```bash
-# 1. Construir a imagem do serviço
-docker-compose build
-
-# 2. Rodar uma coleta rápida (20 veículos por marca)
-docker-compose up
-
-# 3. Rodar a coleta completa (1000 veículos)
+# Rodar a coleta completa + Treinamento da IA
 docker-compose run movida-scraper --max-cards 1000
-
-# 4. Executar apenas o Health Check (Teste de Conectividade)
-docker-compose run health-check
 ```
-*Nota: Os dados coletados no Docker são persistidos automaticamente na sua pasta local `data/` através de volumes.*
-
----
-
-## 🚀 Execução Comum (Local)
-
-Para rodar diretamente no seu Windows (usando o `.venv`):
-
-```powershell
-# Coleta padrão (1000 veículos por marca, modo silencioso)
-.\.venv\Scripts\python.exe main.py
-
-# Coleta rápida para testes (5 veículos por marca, modo visível)
-.\.venv\Scripts\python.exe main.py --max-cards 5 --interactive --verbose
-
-# Apenas teste de diagnóstico de saúde
-.\.venv\Scripts\python.exe main.py --test-only
-```
-
----
-
-## 🛠️ Referência Completa de Comandos (CLI)
-
-Você pode customizar a execução usando estas flags (funciona tanto no Docker quanto no Local):
-
-| Flag | Descrição | Padrão | Exemplo |
-| :--- | :--- | :--- | :--- |
-| `--max-cards` | Qtd de carros coletados por marca | `1000` | `--max-cards 2000` |
-| `--timeout` | Tempo máximo (segundos) de espera por página | `300` | `--timeout 600` |
-| `--output` | Nome do arquivo CSV final | `carros_movida.csv` | `--output base_abril.csv` |
-| `--verbose` | Exibe logs detalhados de cada ação do scraper | `False` | `--verbose` |
-| `--test-only` | Apenas testa se o site está acessível | `False` | `--test-only` |
-| `--no-by-brand` | Coleta da página geral (mais lento/instável) | `False` | `--no-by-brand` |
-
-### Como usar essas flags no Docker?
-Basta adicioná-las ao final do comando `run`:
-```bash
-# Exemplo: Coletar 2000 carros com log detalhado no Docker
-docker-compose run movida-scraper --max-cards 2000 --verbose
-```
+*A IA é disparada automaticamente após a consolidação da camada Gold.*
 
 ---
 
 ## 📊 Capacidades do Serviço
 
--   **Geolocalização Automática**: Converte a cidade do anúncio em coordenadas `Latitude/Longitude` via Nominatim API.
--   **Normalização de Modelos**: Corrige nomes como "Corolla Xei" vs "COROLLA XEi" para garantir agrupamentos corretos.
--   **Análise de SLA**: O script valida a qualidade dos dados ao final da execução (Ex: % de preços capturados).
--   **Power BI Ready**: Gera automaticamente o arquivo `data/gold_final.csv`, fonte direta para o Dashboard.
+-   **Predição de Aging**: Identifica veículos com quilometragem fora do padrão para a idade.
+-   **Deep Learning de Demanda**: Projeção de volume de estoque futuro por região.
+-   **Geolocalização Automática**: Conversão de cidades em coordenadas geográficas.
+-   **Análise de SLA**: Validação automática da integridade dos dados coletados.
+-   **Data Science Ready**: Exporta `gold_predictions.csv` com métricas de R2 e Loss embutidas.
 
 ---
 
-## 📈 Como Visualizar no Power BI
+## 📈 Visualização no Power BI
 
-O projeto já inclui um painel pré-configurado para análise imediata:
+O dashboard consome a camada preditiva para gerar insights de negócio:
 
-1.  **Fonte de Dados**: O painel consome o arquivo **`data/gold_final.csv`**.
-2.  **Abrindo o Relatório**: Abra o arquivo **`powerbi/BI_Movida.pbix`**.
-3.  **Atualização de Caminho**:
-    -   Se ao abrir o Power BI ele exibir erro de "Caminho não encontrado", vá em `Transformar Dados` -> `Configurações da Fonte de Dados`.
-    -   Altere o caminho para o local exato onde o arquivo `gold_final.csv` está no seu computador.
-    -   Clique em `Atualizar` para carregar os dados mais recentes coletados.
-
----
-
-## 🔧 Configurações (`src/config.py`)
-
-Você pode ajustar o comportamento do scraper sem mexer no código principal:
--   **Marcas**: Adicione ou remova marcas da lista `BRANDS`.
--   **Delays**: Controle o tempo de espera entre scrolls para evitar bloqueios.
--   **Bins**: Altere as faixas de preço e KM para os filtros do Power BI.
+1.  **Fonte de Dados**: Aponte para **`data/gold_predictions.csv`**.
+2.  **KPIs Preditivos**: Use as colunas `Aging_Predicted` e `Predicted_Demand_Next_Period` para gráficos de tendência e saúde da frota.
 
 ---
 
 ## 📋 Alinhamento ITIL 4
 
-Este projeto não é apenas um script, mas um **Serviço de TI** alinhado às práticas do ITIL 4:
--   **Foco no Valor**: O output é projetado para a tomada de decisão do analista de mercado.
--   **Gestão de Incidentes**: Diagnóstico de saúde integrado via `ServiceHealth`.
--   **Melhoria Contínua**: Logs detalhados em `movida_scraper.log` para identificação de gargalos.
+-   **Foco no Valor**: Transforma relatórios estáticos em ferramentas preditivas.
+-   **Gestão de Mudanças**: Modelos salvos em `data/models/` para garantir reprodutibilidade.
+-   **Melhoria Contínua**: Métricas de treinamento logadas em cada execução.
 
 ---
-**Desenvolvido para transformar dados em decisões estratégicas.**
+**Transformando a coleta de dados em uma vantagem competitiva preditiva.**

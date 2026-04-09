@@ -33,10 +33,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-<<<<<<< HEAD
 
-=======
->>>>>>> master
 # IDEs
 .vscode/
 .idea/
@@ -44,11 +41,6 @@ wheels/
 *.swo
 *~
 
-<<<<<<< HEAD
-=======
-
->>>>>>> master
-# OS
 .DS_Store
 .DS_Store?
 ._*
@@ -61,9 +53,5 @@ Thumbs.db
 .ipynb_checkpoints/
 
 # Arquivos de configuração local
-<<<<<<< HEAD
 config_local.py
-=======
 config_local.py
-Entrevista.MD
->>>>>>> master

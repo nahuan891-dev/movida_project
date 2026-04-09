@@ -29,9 +29,6 @@ BRAND_URLS = {
 
 # Configurações de scraping
 MAX_CARDS = 1000
-SCROLL_TIMEOUT = 300  # segundos
-SCROLL_STEP = 500  # pixels por scroll
-SCROLL_ATTEMPTS_MAX = 50
 SCROLL_TIMEOUT = 1200  # Aumentado para 20 minutos para coletas grandes
 SCROLL_STEP = 500  # pixels por scroll
 SCROLL_ATTEMPTS_MAX = 500  # Aumentado de 50 para 500 para suportar ~6000+ cards

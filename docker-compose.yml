@@ -1,21 +1,45 @@
 version: '3.8'
 
 services:
+  # Serviço principal: Coleta + IA Automática
   movida-scraper:
     build: .
     container_name: movida-scraper-service
     volumes:
-      # Mapeia a pasta de dados local para persistência (Medalhão)
+      # Persistência das camadas de dados (Medalhão) e predições
       - ./data:/app/data
-      # Se você tiver um arquivo .env, ele será lido
       - ./.env:/app/.env:ro
     environment:
       - PYTHONUNBUFFERED=1
-    # Por padrão, vamos rodar uma coleta de teste rápida
-    # Para rodar a coleta full, use: docker-compose run movida-scraper --max-cards 1000
+      - PYTHONPATH=.
+    # O comando principal roda o scraper que ao final chama a IA automaticamente
     command: ["--max-cards", "20", "--by-brand"]
 
-  # Opcional: Um serviço separado apenas para o Health Check
+  # Novo: Serviço focado apenas no Treinamento de IA (sem scraper)
+  ai-training:
+    build: .
+    container_name: movida-ai-engine
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PYTHONPATH=.
+    # Executa apenas o pipeline de Machine Learning (XGBoost + LSTM)
+    entrypoint: ["python", "src/ml_engine/pipeline.py"]
+
+  # Novo: Chatbot RAG (Conversar com os Dados)
+  rag-chat:
+    build: .
+    container_name: movida-rag-chat
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PYTHONPATH=.
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    entrypoint: ["streamlit", "run", "src/ml_engine/rag_app.py", "--server.address=0.0.0.0"]
+
+  # Diagnóstico de saúde do sistema
   health-check:
     build: .
     container_name: movida-health-check

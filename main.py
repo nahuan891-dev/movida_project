@@ -22,6 +22,7 @@ from src.data_processor import DataProcessor
 from src.pipeline import MovidaDataPipeline, PipelineConfig
 from src.utils import setup_logging, print_data_summary, validate_data_quality
 from src.health_check import ServiceHealth
+from src.ml_engine.pipeline import run_ml_pipeline
 
 
 def main():
@@ -177,6 +178,9 @@ python main.py --no-by-brand
         print(f"\n🚀 AUTOMATIZAÇÃO POWER BI:")
         print(f"📍 Use este arquivo como fonte: data/gold_final.csv")
         print(f"💡 (No Power BI, basta clicar em 'Atualizar' agora!)")
+
+        # DISPARO DA INTELIGÊNCIA ARTIFICIAL (Preditivo)
+        run_ml_pipeline()
 
     except KeyboardInterrupt:
         print("\n⏹️  Execução interrompida pelo usuário")
