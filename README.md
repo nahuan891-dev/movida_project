@@ -65,14 +65,39 @@ uv pip install -r requirements.txt
 
 ## 🐳 Execução via Docker (Recomendado)
 
-O projeto está totalmente conteinerizado, o que garante que o Selenium e a IA funcionem perfeitamente.
+O projeto está totalmente conteinerizado, o que garante que o Selenium, o motor de IA e o Chatbot funcionem perfeitamente.
 
 ### Comandos Docker
-```bash
-# Rodar a coleta completa + Treinamento da IA
-docker-compose run movida-scraper --max-cards 1000
-```
-*A IA é disparada automaticamente após a consolidação da camada Gold.*
+
+1. **Construir o Ambiente**:
+   ```bash
+   docker-compose build
+   ```
+
+2. **Rodar a Coleta Completa + Treinamento da IA**:
+   ```bash
+   # Executa o Scraper e, ao final, treina automaticamente o XGBoost e o LSTM
+   docker-compose up movida-scraper
+   ```
+
+3. **Rodar APENAS o Treinamento da IA**:
+   ```bash
+   # Caso você já tenha dados e queira apenas atualizar os modelos preditivos
+   docker-compose run ai-training
+   ```
+
+4. **Rodar o Chatbot RAG (Conversar com os Dados)**:
+   ```bash
+   # Inicia a interface Streamlit na porta 8501
+   docker-compose up rag-chat
+   ```
+   *Acesse em: http://localhost:8501 (Certifique-se de que a GOOGLE_API_KEY está no seu .env)*
+
+5. **Executar apenas o Health Check**:
+   ```bash
+   docker-compose run health-check
+   ```
+*Nota: Todos os dados coletados e modelos treinados são persistidos na sua pasta local `data/`.*
 
 ---
 

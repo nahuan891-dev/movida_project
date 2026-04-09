@@ -13,7 +13,7 @@ from .scraper import MovidaScraper
 from .data_processor import DataProcessor, DataValidator, GoldDataCleaner
 from .config import BRONZE_DIR, SILVER_DIR, GOLD_DIR, BRANDS
 from .timer import PerformanceTimer, time_block
-from prepare_powerbi import adicionar_coordenadas
+from .prepare_powerbi import adicionar_coordenadas
 
 logger = logging.getLogger(__name__)
 

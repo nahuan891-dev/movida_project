@@ -3,7 +3,7 @@
 venv/
 env/
 ENV/
-
+.env
 # Dados coletados
 data/
 *.csv

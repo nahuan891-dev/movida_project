@@ -80,7 +80,16 @@ class MovidaScraper:
             for option in CHROME_OPTIONS:
                 options.add_argument(option)
 
-        service = Service(ChromeDriverManager().install())
+        # Correção para bug do webdriver-manager que pega arquivo de licença em vez do executável
+        driver_path = ChromeDriverManager().install()
+        if "THIRD_PARTY_NOTICES" in driver_path:
+            driver_path = driver_path.replace("THIRD_PARTY_NOTICES.chromedriver", "chromedriver.exe")
+            # Caso esteja no Linux (Docker), remove o .exe
+            import os
+            if not os.name == 'nt': 
+                driver_path = driver_path.replace(".exe", "")
+
+        service = Service(driver_path)
         driver = webdriver.Chrome(service=service, options=options)
 
         logger.info("Driver Chrome configurado com sucesso")
